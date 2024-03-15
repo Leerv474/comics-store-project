@@ -2,6 +2,7 @@
 Project given as an exam for online Java courses by TOP Academy.
 The goal is to combine 4 variants given by an academy and simultaneously fulfil requirement for each one.
 
+---
 ## Combined task
 Create console application **Comics store**.
 It has to contain:
@@ -10,6 +11,7 @@ It has to contain:
 - employees data and company structure;
 - management of finances;
 
+---
 ## According to the requirements above, this project has four distinct parts:
 - comics
 - employees

@@ -45,10 +45,10 @@ public class Document {
         String datePattern = "yyyy-MM-dd";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
         creationDate = LocalDate.parse(lineList.get(2).substring(15).trim(), formatter);
-        lineList.remove(0);
-        lineList.remove(1);
-        lineList.remove(2);
-        lineList.remove(3);
+        lineList.removeFirst();
+        lineList.removeFirst();
+        lineList.removeFirst();
+        lineList.removeFirst();
         fileContents = lineList;
     }
     public Document(String path) {
@@ -74,7 +74,7 @@ public class Document {
         this.fileContents = fileContents;
     }
     public void saveDocument() {
-        try (FileWriter writer = new FileWriter(path);){
+        try (FileWriter writer = new FileWriter(path)){
             writer.write("Title: " + this.title + '\n');
             writer.write("Author: " + this.author + '\n');
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

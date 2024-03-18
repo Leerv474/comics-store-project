@@ -10,6 +10,7 @@ public class Main {
         DocumentAPI test = new DocumentAPI();
 
         test.openDocument();
+        test.editDocument();
         test.printDocument();
 
     }

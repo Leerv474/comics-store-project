@@ -20,6 +20,7 @@ public class Document {
 
 
     public int openFile(String path) {
+        followsFormatting = false;
         this.path = path;
         List<String> lineList;
         try (Stream<String> lines = Files.lines(Paths.get(path))) {
@@ -61,6 +62,15 @@ public class Document {
         this.title = title;
         this.author = author;
         this.creationDate = LocalDate.now();
+        try (FileWriter writer = new FileWriter(path)){
+            writer.write("Title: " + this.title + '\n');
+            writer.write("Author: " + this.author + '\n');
+            String dateString = getCreationDate();
+            writer.write("Creation Date: " + dateString + "\n\n");
+        } catch (IOException e) {
+            return 3;
+        }
+        followsFormatting = true;
         return 0;
     }
 
@@ -109,22 +119,15 @@ public class Document {
      *         </ul>
      */
     public int saveDocument() {
-        if (this.title.isEmpty()) {
+        if (fileContents.isEmpty()) {
             return 1;
         }
-        if (this.author.isEmpty()) {
-            return 2;
-        }
         try (FileWriter writer = new FileWriter(path)){
-            writer.write("Title: " + this.title + '\n');
-            writer.write("Author: " + this.author + '\n');
-            String dateString = getCreationDate();
-            writer.write("Creation Date: " + dateString + "\n\n");
             for (String line : fileContents) {
                 writer.write(line + '\n');
             }
         } catch (IOException e) {
-            return 3;
+            return 2;
         }
         return 0;
     }

@@ -1,6 +1,7 @@
 package TextDocument;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.io.File;
 import java.util.List;
@@ -9,6 +10,38 @@ import java.util.regex.Pattern;
 
 public class DocumentAPI {
 
+    public static void startDocumentSession() {
+        DocumentAPI documentAPI = new DocumentAPI();
+        boolean keepAlive = true;
+        while (keepAlive) {
+            byte option;
+            var scanner = new Scanner(System.in);
+            System.out.println("...Document API...\n0 - close API\n1 - open document\n2 - create document\n3 - read document\n4 - edit document\n");
+
+            try {
+                option = scanner.nextByte();
+            } catch (InputMismatchException e) {
+                continue;
+            }
+            switch (option) {
+                case 0:
+                    keepAlive = false;
+                    break;
+                case 1:
+                    documentAPI.openDocument();
+                    break;
+                case 2:
+                    documentAPI.createDocument();
+                    break;
+                case 3:
+                    documentAPI.printDocument();
+                    break;
+                case 4:
+                    documentAPI.editDocument();
+                    break;
+            }
+        }
+    }
     private final Document document = new Document();
     private final Scanner scanner = new Scanner(System.in);
     private final Scanner lineScanner = new Scanner(System.in);
@@ -33,12 +66,13 @@ public class DocumentAPI {
         System.out.print("Enter title of the document: ");
         String title;
         do {
-            title = scanner.next();
+            title = scanner.nextLine();
         } while (title.isEmpty());
         document.setTitle(title);
+        System.out.print("Enter author of the document: ");
         String author;
         do {
-            author = scanner.next();
+            author = scanner.nextLine();
         } while (author.isEmpty());
         document.setAuthor(author);
 
@@ -54,6 +88,7 @@ public class DocumentAPI {
                 System.out.println("File creation failed.");
                 break;
         }
+        document.openFile(path);
     }
 
     public void openDocument() {
@@ -153,7 +188,7 @@ public class DocumentAPI {
             System.out.println("No such line");
         }
     }
-    public void substituteByLine() {
+    private void substituteByLine() {
         if (!document.isDocument()) {
             System.out.println("Document file wasn't specified.");
             return;
@@ -211,6 +246,13 @@ public class DocumentAPI {
             case '3':
                 substituteByLine();
                 break;
+        }
+        int savingResult = document.saveDocument();
+        if (savingResult == 1) {
+            System.out.println("There is nothing to write to file");
+        }
+        if (savingResult == 2) {
+            System.out.println("Failed to write to file");
         }
     }
     public void printDocument() {

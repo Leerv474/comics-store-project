@@ -67,6 +67,7 @@ public class Document {
             writer.write("Author: " + this.author + '\n');
             String dateString = getCreationDate();
             writer.write("Creation Date: " + dateString + "\n\n");
+            writer.close();
         } catch (IOException e) {
             return 3;
         }
@@ -126,6 +127,7 @@ public class Document {
             for (String line : fileContents) {
                 writer.write(line + '\n');
             }
+            writer.close();
         } catch (IOException e) {
             return 2;
         }

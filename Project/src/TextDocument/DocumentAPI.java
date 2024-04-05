@@ -16,7 +16,8 @@ public class DocumentAPI {
         while (keepAlive) {
             byte option;
             var scanner = new Scanner(System.in);
-            System.out.println("...Document API...\n0 - close API\n1 - open document\n2 - create document\n3 - read document\n4 - edit document\n");
+            System.out.println(
+                    "...Document API...\n0 - close API\n1 - open document\n2 - create document\n3 - read document\n4 - edit document\n");
 
             try {
                 option = scanner.nextByte();
@@ -42,9 +43,11 @@ public class DocumentAPI {
             }
         }
     }
+
     private final Document document = new Document();
     private final Scanner scanner = new Scanner(System.in);
     private final Scanner lineScanner = new Scanner(System.in);
+
     private String filePathInput() {
         System.out.print("Enter directory path: ");
         String directory;
@@ -140,7 +143,7 @@ public class DocumentAPI {
         document.setFileContents(inputLines);
     }
     private void appendDocument() {
-        List<String> inputLines =  new ArrayList<>();
+        List<String> inputLines = new ArrayList<>();
         List<String> contents = new ArrayList<>(document.getFileContents());
         int numberOfPages = contents.size() / this.linesPerPage + 1;
         int lastPageLine = this.linesPerPage * (numberOfPages - 1);
@@ -232,6 +235,10 @@ public class DocumentAPI {
         document.setFileContents(contents);
     }
     public void editDocument() {
+        if (!document.isDocument()) {
+            System.out.println("Document file wasn't specified.");
+            return;
+        }
         System.out.println("Choose editing method:\n0 - cancel\n1 - write\n2 - append\n3 - substitute lines");
         char enteredOption = scanner.next().charAt(0);
         switch (enteredOption) {
@@ -255,6 +262,7 @@ public class DocumentAPI {
             System.out.println("Failed to write to file");
         }
     }
+
     public void printDocument() {
         if (!document.isDocument()) {
             System.out.println("Document file wasn't specified.");

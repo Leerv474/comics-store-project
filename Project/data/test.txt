@@ -1,7 +1,3 @@
-Title: Testing
-Author: Lee
-Creation Date: 2024-03-16
-
 The moon cast its silvery glow,
 Upon the tranquil waters below.
 Stars twinkled in the midnight sky,
@@ -12,7 +8,7 @@ Underneath the moon's enchanting trance.
 Creatures stir in the dark,
 As the night leaves its vivid mark.
 
-Silence reigns in this serene scene,
+CHANGED
 Where nature's beauty reigns supreme.
 Each moment, a story to be told,
 In this world of mysteries untold.

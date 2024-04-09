@@ -117,6 +117,7 @@ public class DocumentAPI {
         System.out.printf("Author: %s\n", document.getAuthor());
         System.out.printf("Creation date: %s\n\n", document.getCreationDate());
     }
+
     private void writeDocument() {
         String input;
         List<String> inputLines = new ArrayList<>();
@@ -142,6 +143,7 @@ public class DocumentAPI {
         } while (continueAppending);
         document.setFileContents(inputLines);
     }
+
     private void appendDocument() {
         List<String> inputLines = new ArrayList<>();
         List<String> contents = new ArrayList<>(document.getFileContents());
@@ -175,6 +177,7 @@ public class DocumentAPI {
         contents.addAll(inputLines);
         document.setFileContents(contents);
     }
+
     private void handleLineSubstitute(String input, List<String> contents) {
         Pattern pattern = Pattern.compile("\\d+");
         Matcher matcher = pattern.matcher(input);
@@ -191,6 +194,7 @@ public class DocumentAPI {
             System.out.println("No such line");
         }
     }
+
     private void substituteByLine() {
         if (!document.isDocument()) {
             System.out.println("Document file wasn't specified.");
@@ -234,6 +238,7 @@ public class DocumentAPI {
         } while (input.charAt(0) != 'q');
         document.setFileContents(contents);
     }
+
     public void editDocument() {
         if (!document.isDocument()) {
             System.out.println("Document file wasn't specified.");

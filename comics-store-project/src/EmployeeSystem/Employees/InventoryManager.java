@@ -1,10 +1,8 @@
 package EmployeeSystem.Employees;
-import java.util.Date;
-
-class InventoryManager extends Employee {
-
-    public InventoryManager(String surname, String name, String patronymic, Date birthday, String gender, EWorkRate workRate) {
-        super(surname, name, patronymic, birthday, gender, workRate);
+import java.time.LocalDate;
+public class InventoryManager extends Employee {
+    public InventoryManager(String surname, String name, String patronymic, LocalDate birthday, String gender, int bankAccountNumber) {
+        super(surname, name, patronymic, birthday, gender, bankAccountNumber);
     }
 
     @Override

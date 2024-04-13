@@ -1,4 +1,4 @@
-package TextDocument;
+package org.store.TextDocument;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +20,7 @@ public class Document {
 
 
     public int openFile(String path) {
-        followsFormatting = false;
+        this.followsFormatting = false;
         this.path = path;
         List<String> lineList;
         try (Stream<String> lines = Files.lines(Paths.get(path))) {
@@ -37,13 +37,13 @@ public class Document {
         if (!hasTitle || !hasAuthor || !hasCreationDate) {
             return 3;
         }
-        followsFormatting = true;
-        title = lineList.get(0).substring(7);
-        author = lineList.get(1).substring(8);
+        this.followsFormatting = true;
+        this.title = lineList.get(0).substring(7);
+        this.author = lineList.get(1).substring(8);
         String datePattern = "yyyy-MM-dd";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
-        creationDate = LocalDate.parse(lineList.get(2).substring(15).trim(), formatter);
-        fileContents = lineList.subList(4, lineList.size());
+        this.creationDate = LocalDate.parse(lineList.get(2).substring(15).trim(), formatter);
+        this.fileContents = lineList.subList(4, lineList.size());
         return 0;
     }
     public int createFile(String path, String title, String author) {
@@ -71,7 +71,7 @@ public class Document {
         } catch (IOException e) {
             return 3;
         }
-        followsFormatting = true;
+        this.followsFormatting = true;
         return 0;
     }
 

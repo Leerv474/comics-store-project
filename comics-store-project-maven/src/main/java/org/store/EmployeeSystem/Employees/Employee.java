@@ -1,17 +1,17 @@
-package EmployeeSystem.Employees;
+package org.store.EmployeeSystem.Employees;
 import java.time.LocalDate;
 
 public abstract class Employee {
 
-    private int id;
-    private final String surname;
-    private final String name;
-    private final String patronymic;
-    private final LocalDate birthday;
-    private final String gender;
-    private final int bankAccountNumber;
+    private String surname;
+    private String name;
+    private String patronymic;
+    private LocalDate birthday;
+    private String gender;
+    private int bankAccountNumber;
     private LocalDate employmentDate;
 
+    public Employee() {}
     public Employee(String surname, String name, String patronymic, LocalDate birthday, String gender, int bankAccountNumber) {
         this.surname = surname;
         this.name = name;
@@ -22,14 +22,7 @@ public abstract class Employee {
     }
 
     public abstract int calcSalary(int hoursWorked);
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    public abstract String getPositionName();
 
     public LocalDate getEmploymentDate() {
         return employmentDate;

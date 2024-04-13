@@ -1,4 +1,4 @@
-package EmployeeSystem.Employees;
+package org.store.EmployeeSystem.Employees;
 import java.time.LocalDate;
 public class InventoryManager extends Employee {
     public InventoryManager(String surname, String name, String patronymic, LocalDate birthday, String gender, int bankAccountNumber) {
@@ -9,5 +9,9 @@ public class InventoryManager extends Employee {
     public int calcSalary(int hoursWorked) {
         int hourlyRate = 500;
         return hourlyRate * hoursWorked;
+    }
+    @Override
+    public String getPositionName() {
+        return "Inventory Manager";
     }
 }

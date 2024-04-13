@@ -1,4 +1,4 @@
-package TextDocument;
+package org.store.TextDocument;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;

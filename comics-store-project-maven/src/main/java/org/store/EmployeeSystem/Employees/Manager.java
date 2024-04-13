@@ -1,4 +1,4 @@
-package EmployeeSystem.Employees;
+package org.store.EmployeeSystem.Employees;
 
 import java.time.LocalDate;
 
@@ -11,5 +11,9 @@ public class Manager extends Employee {
     public int calcSalary(int hoursWorked) {
         int hourlyRate = 600;
         return hourlyRate * hoursWorked;
+    }
+    @Override
+    public String getPositionName() {
+        return "Manager";
     }
 }

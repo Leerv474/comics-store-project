@@ -24,3 +24,8 @@ CREATE TABLE employees (
 ALTER TABLE employees
 ADD CONSTRAINT positive_hours_worked_check
 CHECK (hours_worked >= 0)
+
+INSERT INTO positions (position) VALUES ("Manager");
+INSERT INTO positions (position) VALUES ("Cashier");
+INSERT INTO positions (position) VALUES ("InverntoryManager");
+INSERT INTO positions (position) VALUES ("FasilitiesStaff");

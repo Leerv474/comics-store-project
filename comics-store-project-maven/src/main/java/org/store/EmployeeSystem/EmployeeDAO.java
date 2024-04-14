@@ -2,7 +2,6 @@ package org.store.EmployeeSystem;
 
 import org.store.EmployeeSystem.Employees.*;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,6 +28,7 @@ public class EmployeeDAO {
             for (String title : dataTitles) {
                 writer.write(title + ' ' + this.data.get(title) + '\n');
             }
+            writer.flush();
         } catch (IOException e) {
             return 1;
         }
@@ -53,7 +53,7 @@ public class EmployeeDAO {
             if (!lineList.get(i + 1).contains(dataTitles[i])) {
                 return 3;
             }
-            data.put(dataTitles[i], lineList.get(i + 1).substring(dataTitles.length + 2));
+            data.put(dataTitles[i], lineList.get(i + 1).substring(dataTitles[i].length() + 1));
         }
         return 0;
     }

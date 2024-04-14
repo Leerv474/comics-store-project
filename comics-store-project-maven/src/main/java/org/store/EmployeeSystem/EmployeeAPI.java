@@ -1,12 +1,8 @@
 package org.store.EmployeeSystem;
 
-
 import org.store.EmployeeSystem.Employees.*;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.time.LocalDate;
 import java.nio.file.Files;
@@ -68,7 +64,7 @@ public class EmployeeAPI {
     private void listEmployees() {
         System.out.println("The list of employees:");
         var employees = employeeMap.entrySet();
-        employees.forEach(employee -> System.out.printf("%d: %s %s %s, %s", employee.getKey(), employee.getValue().getSurname(),
+        employees.forEach(employee -> System.out.printf("%d: %s %s %s, %s\n", employee.getKey(), employee.getValue().getSurname(),
                 employee.getValue().getName(), employee.getValue().getPatronymic(), employee.getValue().getPositionName()));
         System.out.println();
     }

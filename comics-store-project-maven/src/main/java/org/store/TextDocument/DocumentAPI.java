@@ -1,10 +1,11 @@
 package org.store.TextDocument;
 
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.*;
 import java.io.File;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,11 +15,11 @@ public class DocumentAPI {
         DocumentAPI documentAPI = new DocumentAPI();
         boolean keepAlive = true;
         while (keepAlive) {
-            byte option;
+            String inputDirectory;
             var scanner = new Scanner(System.in);
+            byte option;
             System.out.println(
-                    "...Document API...\n0 - close API\n1 - open document\n2 - create document\n3 - read document\n4 - edit document\n");
-
+                    "...Document API...\n0 - close API\n1 - choose directory");
             try {
                 option = scanner.nextByte();
             } catch (InputMismatchException e) {
@@ -29,16 +30,36 @@ public class DocumentAPI {
                     keepAlive = false;
                     break;
                 case 1:
-                    documentAPI.openDocument();
+                    System.out.print("Directory path: ");
+                    inputDirectory = scanner.next();
+                    documentAPI.directoryPath = inputDirectory;
+                    if (documentAPI.openDirectory() == 0) {
+                        keepAlive = false;
+                    }
+            }
+        }
+        keepAlive = true;
+        while (keepAlive) {
+            byte option;
+            var scanner = new Scanner(System.in);
+            System.out.println("...Document API...\n0 - close API\n1 - list files\n2 - open document\n3 - create document");
+            try {
+                option = scanner.nextByte();
+            } catch (InputMismatchException e) {
+                continue;
+            }
+            switch (option) {
+                case 0:
+                    keepAlive = false;
+                    break;
+                case 1:
+                    documentAPI.listFiles();
                     break;
                 case 2:
-                    documentAPI.createDocument();
+                    documentAPI.openDocument();
                     break;
                 case 3:
-                    documentAPI.printDocument();
-                    break;
-                case 4:
-                    documentAPI.editDocument();
+                    documentAPI.createDocument();
                     break;
             }
         }
@@ -47,25 +68,118 @@ public class DocumentAPI {
     private final Document document = new Document();
     private final Scanner scanner = new Scanner(System.in);
     private final Scanner lineScanner = new Scanner(System.in);
+    private String directoryPath = null;
+    private TreeSet<String> fileNames = new TreeSet<>();
 
-    private String filePathInput() {
-        System.out.print("Enter directory path: ");
-        String directory;
-        File file;
-        do {
-            directory = scanner.next();
-            file = new File(directory);
-        } while (!file.isDirectory());
+    public int openDirectory() {
+        try {
+            Files.list(Path.of(this.directoryPath))
+                    .filter(Files::isRegularFile)
+                    .forEach(file -> this.fileNames.add(file.getFileName().toString()));
+        } catch (IOException e) {
+            this.directoryPath = null;
+            return 1;
+        }
+        TreeSet<String> correctFiles = new TreeSet<>(this.fileNames);
+        for (String fileName : this.fileNames) {
+            if (document.openFile(directoryPath + '/' + fileName) != 0) {
+                correctFiles.remove(fileName);
+            }
+        }
+        this.fileNames = new TreeSet<>(correctFiles);
+        return 0;
+    }
+
+    public void listFiles() {
+        while (true) {
+            System.out.println("0 - go back\n1 - by name\n2 - by author\n3 - by creation date\n4 - by size");
+            byte option;
+            try {
+                option = scanner.nextByte();
+            } catch (Exception e) {
+                continue;
+            }
+            switch (option) {
+                case 0:
+                    return;
+                case 1:
+                    listByName();
+                    return;
+                case 2:
+                    listByAuthor();
+                    return;
+                case 3:
+                    listByDate();
+                    return;
+                case 4:
+                    listBySize();
+                    return;
+            }
+        }
+    }
+    private void listByName() {
+        System.out.println("---List of files---");
+        fileNames.forEach(fileName ->
+                System.out.printf("%s\n", fileName));
+        System.out.println();
+    }
+
+    private void listByAuthor() {
+        System.out.println("---List of files---");
+        TreeMap<String, String> list = new TreeMap<>();
+        for (String fileName : this.fileNames) {
+            document.openFile(this.directoryPath + '/' + fileName);
+            String author = document.getAuthor();
+            list.put(author, fileName);
+        }
+
+        for (Map.Entry<String, String> element : list.entrySet()) {
+            System.out.printf("%s, %s\n", element.getValue(), element.getKey());
+        }
+        System.out.println();
+    }
+
+    private void listByDate() {
+        System.out.println("---List of files---");
+        TreeMap<String, String> list = new TreeMap<>();
+        for (String fileName : this.fileNames) {
+            document.openFile(this.directoryPath + '/' + fileName);
+            String date = document.getCreationDate();
+            list.put(date, fileName);
+        }
+
+        for (Map.Entry<String, String> element : list.entrySet()) {
+            System.out.printf("%s, %s\n", element.getValue(), element.getKey());
+        }
+        System.out.println();
+    }
+
+    private void listBySize() {
+        System.out.println("---List of files---");
+        TreeMap<Long, String> list = new TreeMap<>();
+        for (String fileName : this.fileNames) {
+            document.openFile(this.directoryPath + '/' + fileName);
+            long size = document.getFileSize();
+            list.put(size, fileName);
+        }
+
+        for (Map.Entry<Long, String> element : list.entrySet()) {
+            System.out.printf("%s, %d\n", element.getValue(), element.getKey());
+        }
+        System.out.println();
+    }
+
+    private String fileNameInput() {
         System.out.print("Enter file name: ");
         String fileName;
         do {
             fileName = scanner.next();
         } while (fileName.isEmpty());
-        return directory + '/' + fileName;
+        return this.directoryPath + '/' + fileName;
     }
 
     public void createDocument() {
-        String path = filePathInput();
+        String fileName = fileNameInput();
         System.out.print("Enter title of the document: ");
         String title;
         do {
@@ -79,7 +193,7 @@ public class DocumentAPI {
         } while (author.isEmpty());
         document.setAuthor(author);
 
-        int creationResult = document.createFile(path, title, author);
+        int creationResult = document.createFile(fileName, title, author);
         switch (creationResult) {
             case 0:
                 System.out.println("File successfully created.");
@@ -91,12 +205,13 @@ public class DocumentAPI {
                 System.out.println("File creation failed.");
                 break;
         }
-        document.openFile(path);
+        fileNames.add(fileName);
+        document.openFile(fileName);
     }
 
     public void openDocument() {
-        String path = filePathInput();
-        int openingResult = document.openFile(path);
+        String fileName = fileNameInput();
+        int openingResult = document.openFile(fileName);
         switch (openingResult) {
             case 0:
                 System.out.println("Document opened successfully");
@@ -107,6 +222,47 @@ public class DocumentAPI {
             case 2, 3:
                 System.out.println("File is not a document");
                 break;
+        }
+        byte option;
+        while (true) {
+            System.out.printf("---%s---\n", fileName);
+            System.out.println("0 - go back\n1 - print\n2 - edit\n3 - search\n");
+            try {
+                option = scanner.nextByte();
+            } catch (Exception e) {
+                continue;
+            }
+            switch (option) {
+                case 0:
+                    return;
+                case 1:
+                    printDocument();
+                    break;
+                case 2:
+                    editDocument();
+                    break;
+                case 3:
+                    searchInDocument();
+                    break;
+            }
+        }
+    }
+
+    public void searchInDocument() {
+        System.out.println("---Search in document---");
+        String inputString = "";
+        while (inputString.isEmpty()) {
+            System.out.print("Search string: ");
+            inputString = scanner.nextLine();
+        }
+        List<String> fileContents = document.getFileContents();
+        int index = 1;
+        for (String line : fileContents) {
+            if (line.contains(inputString)) {
+                System.out.printf("String found at line %d\n", index);
+                return;
+            }
+            index++;
         }
     }
 

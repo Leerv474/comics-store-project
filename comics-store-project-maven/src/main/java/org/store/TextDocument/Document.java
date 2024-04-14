@@ -67,7 +67,7 @@ public class Document {
             writer.write("Author: " + this.author + '\n');
             String dateString = getCreationDate();
             writer.write("Creation Date: " + dateString + "\n\n");
-            writer.close();
+            writer.flush();
         } catch (IOException e) {
             return 3;
         }
@@ -120,14 +120,24 @@ public class Document {
      *         </ul>
      */
     public int saveDocument() {
+        try (FileWriter writer = new FileWriter(path)){
+            writer.write("Title: " + this.title + '\n');
+            writer.write("Author: " + this.author + '\n');
+            String dateString = getCreationDate();
+            writer.write("Creation Date: " + dateString + "\n\n");
+            writer.flush();
+        } catch (IOException e) {
+            return 3;
+        }
+        this.followsFormatting = true;
         if (fileContents.isEmpty()) {
             return 1;
         }
-        try (FileWriter writer = new FileWriter(path)){
+        try (FileWriter writer = new FileWriter(path, true)){
             for (String line : fileContents) {
                 writer.write(line + '\n');
             }
-            writer.close();
+            writer.flush();
         } catch (IOException e) {
             return 2;
         }

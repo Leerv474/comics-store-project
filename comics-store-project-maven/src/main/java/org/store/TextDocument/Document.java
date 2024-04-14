@@ -103,22 +103,10 @@ public class Document {
         File file = new File(path);
         return file.length();
     }
-    public boolean isDocument() {
-        return this.followsFormatting;
+    public boolean notDocument() {
+        return !this.followsFormatting;
     }
 
-    /**
-     * This method creates a file and writes data to it.
-     *
-     * @return An integer value indicating the result:
-     *         <ul>
-     *         <li>0 - success</li>
-     *         <li>1 - failed creating a file</li>
-     *         <li>2 - title wasn't specified</li>
-     *         <li>3 - author wasn't specified</li>
-     *         <li>4 - failed writing to a file</li>
-     *         </ul>
-     */
     public int saveDocument() {
         try (FileWriter writer = new FileWriter(path)){
             writer.write("Title: " + this.title + '\n');

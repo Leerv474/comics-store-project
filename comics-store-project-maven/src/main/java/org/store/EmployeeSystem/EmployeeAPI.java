@@ -6,23 +6,23 @@ import java.nio.file.Path;
 import java.util.*;
 import java.time.LocalDate;
 import java.nio.file.Files;
+import java.util.stream.Stream;
 
 public class EmployeeAPI {
-    private static HashMap<Integer, Employee> employeeMap = new HashMap<>();
+    private static final HashMap<Integer, Employee> employeeMap = new HashMap<>();
     private static final Scanner scanner = new Scanner(System.in);
 
     private static final Path directoryPath = Path.of("src/main/java/org/store/EmployeeData");
-    private static EmployeeDAO dao = new EmployeeDAO(directoryPath);
+    private static final EmployeeDAO dao = new EmployeeDAO(directoryPath);
 
     public static void start() {
         EmployeeAPI api = new EmployeeAPI();
         try {
             Files.createDirectory(directoryPath);
-        } catch (IOException e) {
-            System.err.println("Failed to create directory");
-        }
+        } catch (IOException ignored) {}
+
         api.loadData();
-        char inputOption = 0;
+        char inputOption;
         while (true) {
             System.out.println("...Employee System...");
             System.out.println("Choose action:\n1 - List employees\n2 - Hire new employee\n3 - Fire employee\n0 - Exit\n");
@@ -45,17 +45,14 @@ public class EmployeeAPI {
 
     private void loadData() {
         List<String> fileNames = new ArrayList<>();
-        try {
-            Files.list(directoryPath)
-                    .filter(Files::isRegularFile)
+        try (Stream<Path> files = Files.list(directoryPath)) {
+            files.filter(Files::isRegularFile)
                     .forEach(file -> fileNames.add(file.getFileName().toString()));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to load data");
         }
-        int trimIndex;
         for (String fileName : fileNames) {
             int hashId = Integer.parseInt(fileName.substring(0, fileName.length() - 4));
-            //TODO: get this done
             dao.loadFile(fileName);
             employeeMap.put(hashId, dao.getEmployee());
         }

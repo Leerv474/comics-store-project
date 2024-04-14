@@ -8,54 +8,54 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class EmployeeDAO {
-    private List<String> inputData = new ArrayList<>();
     private HashMap<String, String> data = new HashMap<>();
-    private Path path;
+    private final Path path;
 
     public EmployeeDAO(Path path) {
         this.path = path;
     }
-    public int saveFile(String fileName) {
+    public void saveFile(String fileName) {
         String[] dataTitles = {"Position", "Surname", "Name", "Patronymic", "Birth Date", "Gender", "Bank Account Number"};
         try (FileWriter writer = new FileWriter(path.toString() + '/' + fileName)){
             writer.write("---Employee---\n");
             for (String title : dataTitles) {
-                writer.write(title + ' ' + this.data.get(title) + '\n');
+                writer.write(title + ": " + this.data.get(title) + '\n');
             }
             writer.flush();
         } catch (IOException e) {
-            return 1;
+            System.err.println("Failed to write file");
         }
-        return 0;
     }
-    public int loadFile(String fileName) {
+    public void loadFile(String fileName) {
         List<String> lineList;
         Path filePath = Path.of(this.path.toString(), fileName);
         try (Stream<String> lines = Files.lines(filePath)) {
             lineList = lines.toList();
         } catch (IOException e) {
-            return 1;
+            System.err.println("Failed to read file");
+            return;
         }
         if (lineList.size() < 8) {
-            return 2;
+            System.err.println("File doesn't follow formatting");
+            return;
         }
         if (!lineList.getFirst().contains("---Employee---")) {
-            return 3;
+            System.err.println("File doesn't follow formatting");
+            return;
         }
         String[] dataTitles = {"Position", "Surname", "Name", "Patronymic", "Birth Date", "Gender", "Bank Account Number"};
         for (int i = 0; i < dataTitles.length; i++) {
             if (!lineList.get(i + 1).contains(dataTitles[i])) {
-                return 3;
+                System.err.println("File doesn't follow formatting");
+                return;
             }
-            data.put(dataTitles[i], lineList.get(i + 1).substring(dataTitles[i].length() + 1));
+            data.put(dataTitles[i], lineList.get(i + 1).substring(dataTitles[i].length() + 2));
         }
-        return 0;
     }
 
     public void setData(HashMap<String, String> newData) {

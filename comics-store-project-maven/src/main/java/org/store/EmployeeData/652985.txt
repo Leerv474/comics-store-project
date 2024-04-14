@@ -1,8 +1,0 @@
----Employee---
-Position Manager
-Surname Bokov
-Name Artem
-Patronymic Alexeevich
-Birth Date 2002-12-24
-Gender Male
-Bank Account Number 123

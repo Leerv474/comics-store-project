@@ -1,8 +1,8 @@
 ---Employee---
-Position Inventory Manager
-Surname Gubin
-Name Egor
-Patronymic Vyacheslavovich
-Birth Date 2004-08-02
-Gender Male
-Bank Account Number 654
+Position: Inventory Manager
+Surname: Gubin
+Name: Egor
+Patronymic: Vyacheslavovich
+Birth Date: 2004-08-02
+Gender: Male
+Bank Account Number: 654

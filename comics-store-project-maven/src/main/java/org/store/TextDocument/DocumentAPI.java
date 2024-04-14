@@ -1,13 +1,11 @@
 package org.store.TextDocument;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.*;
-import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class DocumentAPI {
 
@@ -72,11 +70,9 @@ public class DocumentAPI {
     private TreeSet<String> fileNames = new TreeSet<>();
 
     public int openDirectory() {
-        try {
-            Files.list(Path.of(this.directoryPath))
-                    .filter(Files::isRegularFile)
-                    .forEach(file -> this.fileNames.add(file.getFileName().toString()));
-        } catch (IOException e) {
+        try (Stream<Path> files = Files.list(Path.of(this.directoryPath))) {
+            files.filter(Files::isRegularFile).forEach(file -> this.fileNames.add(file.getFileName().toString()));
+        } catch (Exception e){
             this.directoryPath = null;
             return 1;
         }
@@ -352,7 +348,7 @@ public class DocumentAPI {
     }
 
     private void substituteByLine() {
-        if (!document.isDocument()) {
+        if (document.notDocument()) {
             System.out.println("Document file wasn't specified.");
             return;
         }
@@ -396,7 +392,7 @@ public class DocumentAPI {
     }
 
     public void editDocument() {
-        if (!document.isDocument()) {
+        if (document.notDocument()) {
             System.out.println("Document file wasn't specified.");
             return;
         }
@@ -425,7 +421,7 @@ public class DocumentAPI {
     }
 
     public void printDocument() {
-        if (!document.isDocument()) {
+        if (document.notDocument()) {
             System.out.println("Document file wasn't specified.");
             return;
         }

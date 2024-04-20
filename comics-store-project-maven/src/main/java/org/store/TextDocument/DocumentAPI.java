@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class DocumentAPI {
 
-    public static void startDocumentSession() {
+    public static void startDocumentAPI() {
         DocumentAPI documentAPI = new DocumentAPI();
         boolean keepAlive = true;
         while (keepAlive) {
@@ -58,6 +58,33 @@ public class DocumentAPI {
                     break;
                 case 3:
                     documentAPI.createDocument();
+                    break;
+            }
+        }
+    }
+    public static void startDocumentApiInDirectory(String path) {
+        DocumentAPI documentAPI = new DocumentAPI();
+        documentAPI.directoryPath = path;
+        documentAPI.openDirectory();
+        boolean keepAlive = true;
+        while (keepAlive) {
+            byte option;
+            var scanner = new Scanner(System.in);
+            System.out.println("...Document API...\n0 - close API\n1 - list files\n2 - open document");
+            try {
+                option = scanner.nextByte();
+            } catch (InputMismatchException e) {
+                continue;
+            }
+            switch (option) {
+                case 0:
+                    keepAlive = false;
+                    break;
+                case 1:
+                    documentAPI.listFiles();
+                    break;
+                case 2:
+                    documentAPI.openDocument();
                     break;
             }
         }

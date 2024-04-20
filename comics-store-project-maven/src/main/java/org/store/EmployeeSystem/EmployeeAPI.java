@@ -1,6 +1,8 @@
 package org.store.EmployeeSystem;
 
 import org.store.EmployeeSystem.Employees.*;
+import org.store.TextDocument.Document;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -15,7 +17,7 @@ public class EmployeeAPI {
     private static final Path directoryPath = Path.of("src/main/java/org/store/EmployeeData");
     private static final EmployeeDAO dao = new EmployeeDAO(directoryPath);
 
-    public static void start() {
+    public static void startEmployeeAPI() {
         EmployeeAPI api = new EmployeeAPI();
         try {
             Files.createDirectory(directoryPath);
@@ -25,7 +27,7 @@ public class EmployeeAPI {
         char inputOption;
         while (true) {
             System.out.println("...Employee System...");
-            System.out.println("Choose action:\n1 - List employees\n2 - Hire new employee\n3 - Fire employee\n0 - Exit\n");
+            System.out.println("Choose action:\n1 - List employees\n2 - Hire new employee\n3 - Fire employee\n4 - Calculate salaries\n0 - Exit\n");
             inputOption = scanner.next().charAt(0);
             if (inputOption == '0') {
                 return;
@@ -38,6 +40,9 @@ public class EmployeeAPI {
             }
             if (inputOption == '3') {
                 api.fireEmployee();
+            }
+            if (inputOption == '4') {
+                api.calcSalaries();
             }
             System.out.println();
         }
@@ -58,7 +63,7 @@ public class EmployeeAPI {
         }
     }
 
-    private void listEmployees() {
+    public void listEmployees() {
         System.out.println("The list of employees:");
         var employees = employeeMap.entrySet();
         employees.forEach(employee -> System.out.printf("%d: %s %s %s, %s\n", employee.getKey(), employee.getValue().getSurname(),
@@ -66,7 +71,7 @@ public class EmployeeAPI {
         System.out.println();
     }
 
-    private void hireEmployee() {
+    public void hireEmployee() {
         char optionInput;
         final String employeeOptions = "1234";
         System.out.println("Adding employee...\nChoose employee type:\n1 - Manager\n2 - Cashier\n3 - Inventory Manager\n4 - Facilities Staff");
@@ -107,7 +112,7 @@ public class EmployeeAPI {
         int maxId = 999999;
         int newHash= random.nextInt(maxId - minId + 1) + minId;
         while (employeeMap.containsKey(newHash)) {
-            newHash = random.nextInt();
+            newHash = random.nextInt(maxId - minId + 1) + minId;
         }
         if (optionInput == '1') {
             Manager newManager = new Manager(employeeData.get("Surname"), employeeData.get("Name"), employeeData.get("Patronymic"),
@@ -149,5 +154,35 @@ public class EmployeeAPI {
         employeeMap.remove(employeeId);
         String fileName = String.format("%d.txt", employeeId);
         dao.deleteFile(fileName);
+    }
+
+    public void calcSalaries() {
+        HashMap<Integer, Integer> salariesById = new HashMap<>();
+        employeeMap.forEach((key, value) -> salariesById.put(key, value.calcSalary(40)));
+        System.out.println("The list of employees with salaries:");
+        var employees = employeeMap.entrySet();
+        List<String> reportContents = new ArrayList<>();
+        for (Map.Entry<Integer, Employee> employee : employees) {
+            String dataString = String.format("%d: %s %s %s, %s - %d\n", employee.getKey(), employee.getValue().getSurname(),
+                    employee.getValue().getName(), employee.getValue().getPatronymic(), employee.getValue().getPositionName(),
+                    salariesById.get(employee.getKey()));
+            System.out.print(dataString);
+            reportContents.add(dataString);
+        }
+        System.out.print("Do you want to save this as a document? (y/n): ");
+        char option;
+        do {
+            option = scanner.next().toLowerCase().charAt(0);
+            if (option == 'n') {
+                return;
+            }
+        } while (option != 'y');
+        String inputPath = "src/main/java/org/store/DocumentData";
+        inputPath += String.format("/report_%s.txt", String.valueOf(LocalDate.now()));
+        Document salaryReport = new Document();
+        salaryReport.createFile(inputPath, "Salary report", "Comics Store");
+        salaryReport.setFileContents(reportContents);
+        salaryReport.saveDocument();
+        System.out.println("\nData saved as a document");
     }
 }

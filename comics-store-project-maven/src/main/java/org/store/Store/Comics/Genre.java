@@ -10,6 +10,6 @@ public enum Genre {
     HISTORICAL,
     ROMANCE,
     ADVENTURE,
-    HUMOR;
+    Comedy;
 
 }

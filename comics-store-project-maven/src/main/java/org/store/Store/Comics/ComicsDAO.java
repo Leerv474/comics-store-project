@@ -40,11 +40,11 @@ public class ComicsDAO {
             System.err.println("Failed to read file");
             return;
         }
-        if (lineList.size() < 8) {
+        if (lineList.size() < 6) {
             System.err.println("File doesn't follow formatting");
             return;
         }
-        if (!lineList.getFirst().contains("---Employee---")) {
+        if (!lineList.getFirst().contains("---Comic---")) {
             System.err.println("File doesn't follow formatting");
             return;
         }
@@ -66,7 +66,7 @@ public class ComicsDAO {
         this.data.put("Amount in Stock", String.valueOf(comic.getAmountInStock()));
     }
 
-    public Comic getEmployee() {
+    public Comic getComic() {
         LocalDate releaseDate = LocalDate.parse(data.get("Release Date"));
         int amountInStock = Integer.parseInt(data.get("Amount in Stock"));
         int price = Integer.parseInt(data.get("Price"));

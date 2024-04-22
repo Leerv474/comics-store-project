@@ -482,7 +482,6 @@ public class DocumentAPI {
             if (input == 'p' && currentPage > 1) {
                 currentPage--;
             }
-
         } while (input != 'q');
     }
 }

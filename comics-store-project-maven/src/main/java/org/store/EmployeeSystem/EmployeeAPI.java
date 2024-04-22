@@ -64,10 +64,11 @@ public class EmployeeAPI {
     }
 
     public void listEmployees() {
-        System.out.println("The list of employees:");
-        var employees = employeeMap.entrySet();
-        employees.forEach(employee -> System.out.printf("%d: %s %s %s, %s\n", employee.getKey(), employee.getValue().getSurname(),
-                employee.getValue().getName(), employee.getValue().getPatronymic(), employee.getValue().getPositionName()));
+        System.out.println("---List of Employees---");
+        TreeMap<String, Integer> list = new TreeMap<>();
+        employeeMap.forEach((key, value) -> list.put(String.format("%s %s %s", value.getSurname(),
+                value.getName(), value.getPatronymic()), key));
+        list.forEach((key, value) -> System.out.printf("%d: %s, %s\n", value, key, employeeMap.get(value).getPositionName()));
         System.out.println();
     }
 

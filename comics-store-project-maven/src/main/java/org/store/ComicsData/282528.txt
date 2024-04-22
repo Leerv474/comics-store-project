@@ -1,0 +1,7 @@
+---Comic---
+Title: Spider-man
+Author: Stan Lee
+Genre: SUPERHERO
+Release Date: 1962-01-01
+Price: 200
+Amount in Stock: 100

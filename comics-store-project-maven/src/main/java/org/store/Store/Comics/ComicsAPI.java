@@ -47,7 +47,7 @@ public class ComicsAPI {
         }
     }
 
-    private void loadData() {
+    public void loadData() {
         List<String> fileNames = new ArrayList<>();
         try (Stream<Path> files = Files.list(directoryPath)) {
             files.filter(Files::isRegularFile).forEach(file -> fileNames.add(file.getFileName().toString()));
@@ -62,15 +62,73 @@ public class ComicsAPI {
         }
     }
 
-    private void listComics() {
-        System.out.println("The list of comics:");
-        var comics = comicsMap.entrySet();
-        comics.forEach(comic -> System.out.printf("%d: %s, %s, amount: %d, price: %d\n", comic.getKey(), comic.getValue().getTitle(),
-                comic.getValue().getAuthor(), comic.getValue().getAmountInStock(), comic.getValue().getPrice()));
+    public void listComics() {
+        while (true) {
+            System.out.println("0 - go back\n1 - by title\n2 - by author\n3 - by amount in stock\n4 - by price");
+            byte option;
+            try {
+                option = scanner.nextByte();
+            } catch (Exception e) {
+                continue;
+            }
+            switch (option) {
+                case 0:
+                    return;
+                case 1:
+                    listByTitle();
+                    return;
+                case 2:
+                    listByAuthor();
+                    return;
+                case 3:
+                    listByAmount();
+                    return;
+                case 4:
+                    listByPrice();
+                    return;
+            }
+        }
+    }
+
+    private void listByTitle() {
+        System.out.println("---List of comics---");
+        TreeMap<String, Integer> list = new TreeMap<>();
+        comicsMap.forEach((key, value) -> list.put(value.getTitle(), key));
+        list.forEach((key, value) -> System.out.printf("%d: %s, %s, amount: %d, price: %d\n", value, key,
+                comicsMap.get(value).getAuthor(), comicsMap.get(value).getAmountInStock(), comicsMap.get(value).getPrice()));
         System.out.println();
     }
 
-    private void addComic() {
+    private void listByAuthor() {
+        System.out.println("---List of comics---");
+        TreeMap<String, Integer> list = new TreeMap<>();
+        comicsMap.forEach((key, value) -> list.put(value.getAuthor(), key));
+        list.forEach((key, value) -> System.out.printf("%d: %s, %s, amount: %d, price: %d\n", value, comicsMap.get(value).getTitle(),
+                key, comicsMap.get(value).getAmountInStock(), comicsMap.get(value).getPrice()));
+        System.out.println();
+    }
+
+    private void listByAmount() {
+        System.out.println("---List of comics---");
+        TreeMap<Integer, Integer> list = new TreeMap<>();
+        comicsMap.forEach((key, value) -> list.put(value.getAmountInStock(), key));
+        list.forEach((key, value) -> System.out.printf("%d: %s, %s, amount: %d, price: %d\n", value, comicsMap.get(value).getTitle(),
+                comicsMap.get(value).getAuthor(),
+                key, comicsMap.get(value).getPrice()));
+        System.out.println();
+    }
+
+    private void listByPrice() {
+        System.out.println("---List of comics---");
+        TreeMap<Integer, Integer> list = new TreeMap<>();
+        comicsMap.forEach((key, value) -> list.put(value.getPrice(), key));
+        list.forEach((key, value) -> System.out.printf("%d: %s, %s, amount: %d, price: %d\n", value, comicsMap.get(value).getTitle(),
+                comicsMap.get(value).getAuthor(),
+                comicsMap.get(value).getAmountInStock(), key));
+        System.out.println();
+    }
+
+    public void addComic() {
         System.out.println("...Adding new comic...");
         HashMap<String, String> dataInput = new HashMap<>();
         String[] titles = {"Title", "Author", "Release Date", "Price", "Amount in Stock"};
@@ -137,7 +195,7 @@ public class ComicsAPI {
         dao.saveFile(String.format("%d.txt", newHash));
     }
 
-    private void removeComic() {
+    public void removeComic() {
         System.out.println("...Removing comic...");
         System.out.print("Enter comic id: ");
         
@@ -159,7 +217,7 @@ public class ComicsAPI {
         dao.deleteFile(fileName);
     }
 
-    private void restockComic() {
+    public void restockComic() {
         System.out.println("...Restocking...");
         System.out.print("Enter comic id: ");
 

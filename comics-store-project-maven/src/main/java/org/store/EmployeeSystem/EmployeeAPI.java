@@ -183,7 +183,11 @@ public class EmployeeAPI {
         Document salaryReport = new Document();
         salaryReport.createFile(inputPath, "Salary report", "Comics Store");
         salaryReport.setFileContents(reportContents);
-        salaryReport.saveDocument();
+        int result = salaryReport.saveDocument();
+        if (result == 4) {
+            System.out.println("Report on this date was already created");
+            return;
+        }
         System.out.println("\nData saved as a document");
     }
 }

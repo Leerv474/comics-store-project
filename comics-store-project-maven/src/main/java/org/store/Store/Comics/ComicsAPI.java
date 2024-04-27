@@ -25,7 +25,15 @@ public class ComicsAPI {
         char inputOption;
         while (true) {
             System.out.println("...Comics system...");
-            System.out.println("Choose action:\n0 - close API\n1 - list comics\n2 - add new comic\n3 - restock comic\n4 - write off comic");
+            System.out.println("""
+                    Choose action:
+                    0 - close API
+                    1 - list comics
+                    2 - add new comic
+                    3 - sell comic
+                    4 - restock comic
+                    5 - write off\
+                     comic""");
             inputOption = scanner.next().charAt(0);
             switch (inputOption) {
                 case '0':
@@ -37,9 +45,12 @@ public class ComicsAPI {
                     api.addComic();
                     break;
                 case '3':
-                    api.restockComic();
+                    api.registerSale();
                     break;
                 case '4':
+                    api.restockComic();
+                    break;
+                case '5':
                     api.removeComic();
                     break;
             }
@@ -133,14 +144,25 @@ public class ComicsAPI {
         HashMap<String, String> dataInput = new HashMap<>();
         String[] titles = {"Title", "Author", "Release Date", "Price", "Amount in Stock"};
 
-        for (int i = 0; i < titles.length; i++) {
-            System.out.printf("%s: ", titles[i]);
+        for (String title : titles) {
+            System.out.printf("%s: ", title);
             do {
-                dataInput.put(titles[i], scanner.nextLine());
-            } while (dataInput.get(titles[i]).isEmpty());
+                dataInput.put(title, scanner.nextLine());
+            } while (dataInput.get(title).isEmpty());
         }
-        System.out.println("Choose genre:\n1 - Superhero\n2 - Science fiction\n3 - Fantasy\n4 - Horror\n5 - Noir\n6 - Slice of life\n7 - " +
-                "Historical\n8 - Romance\n9 - Adventure\n10 - Comedy");
+        System.out.println("""
+                Choose genre:
+                1 - Superhero
+                2 - Science fiction
+                3 - Fantasy
+                4 - Horror
+                5 - Noir
+                6 - Slice of life
+                7 - \
+                Historical
+                8 - Romance
+                9 - Adventure
+                10 - Comedy""");
         int option = 0;
         Genre newGenre = null;
         while (newGenre == null) {
@@ -203,9 +225,7 @@ public class ComicsAPI {
         do {
             try {
                 comicId = scanner.nextInt();
-            } catch (Exception e) {
-                continue;
-            }
+            } catch (Exception ignore) {}
         } while (comicId == -1);
 
         if (!comicsMap.containsKey(comicId)) {
@@ -225,9 +245,7 @@ public class ComicsAPI {
         do {
             try {
                 comicId = scanner.nextInt();
-            } catch (Exception e) {
-                continue;
-            }
+            } catch (Exception ignore) {}
         } while (comicId > 100000 && comicId < 999999);
 
         if (!comicsMap.containsKey(comicId)) {
@@ -239,12 +257,40 @@ public class ComicsAPI {
         do {
             try {
                 newAmount = scanner.nextInt();
-            } catch (Exception e) {
-                continue;
-            }
+            } catch (Exception ignore) {}
         } while (newAmount > 0);
         Comic comic = comicsMap.get(comicId);
         newAmount += comic.getAmountInStock();
+        comic.setAmountInStock(newAmount);
+        dao.setData(comic);
+        String fileName = String.format("%d.txt", comicId);
+        dao.saveFile(fileName);
+    }
+
+    public void registerSale() {
+        System.out.println("...Registering sale...");
+        System.out.print("Enter comic id: ");
+
+        int comicId = -1;
+        do {
+            try {
+                comicId = scanner.nextInt();
+            } catch (Exception ignore) {}
+        } while (comicId > 100000 && comicId < 999999);
+
+        if (!comicsMap.containsKey(comicId)) {
+            System.out.println("Comic not found");
+            return;
+        }
+        System.out.print("Enter amount of sold comics: ");
+        int newAmount = 0;
+        do {
+            try {
+                newAmount = scanner.nextInt();
+            } catch (Exception ignore) {}
+        } while (newAmount > 0);
+        Comic comic = comicsMap.get(comicId);
+        newAmount -= comic.getAmountInStock();
         comic.setAmountInStock(newAmount);
         dao.setData(comic);
         String fileName = String.format("%d.txt", comicId);

@@ -1,0 +1,7 @@
+---Comic---
+Title: test
+Author: test
+Genre: SCIENCE_FICTION
+Release Date: 2000-12-12
+Price: 200
+Amount in Stock: 200

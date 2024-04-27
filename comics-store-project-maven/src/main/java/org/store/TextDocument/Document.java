@@ -18,10 +18,6 @@ public class Document {
     private List<String> fileContents;
     private boolean followsFormatting = false;
 
-
-    public void setPath(String path) {
-        this.path = path;
-    }
     public int openFile(String path) {
         this.followsFormatting = false;
         this.path = path;

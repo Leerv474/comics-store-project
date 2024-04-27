@@ -12,6 +12,8 @@ public class StoreAPI {
         var scanner = new Scanner(System.in);
         char option;
         while (true) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             System.out.println("Actions:\n0 - close\n1 - Manage comics\n2 - Manage employees\n3 - View documents");
             option = scanner.next().charAt(0);
 

@@ -8,18 +8,25 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class DocumentAPI {
+    private final Document DOCUMENT = new Document();
+    private static final Scanner SCANNER = new Scanner(System.in);
+    private final Scanner LINE_SCANNER = new Scanner(System.in);
+    private String directoryPath = null;
+    private TreeSet<String> fileNames = new TreeSet<>();
+
 
     public static void startDocumentAPI() {
         DocumentAPI documentAPI = new DocumentAPI();
         boolean keepAlive = true;
         while (keepAlive) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             String inputDirectory;
-            var scanner = new Scanner(System.in);
             byte option;
             System.out.println(
                     "...Document API...\n0 - close API\n1 - choose directory");
             try {
-                option = scanner.nextByte();
+                option = SCANNER.nextByte();
             } catch (InputMismatchException e) {
                 continue;
             }
@@ -29,7 +36,7 @@ public class DocumentAPI {
                     break;
                 case 1:
                     System.out.print("Directory path: ");
-                    inputDirectory = scanner.next();
+                    inputDirectory = SCANNER.next();
                     documentAPI.directoryPath = inputDirectory;
                     if (documentAPI.openDirectory() == 0) {
                         keepAlive = false;
@@ -38,6 +45,8 @@ public class DocumentAPI {
         }
         keepAlive = true;
         while (keepAlive) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             byte option;
             var scanner = new Scanner(System.in);
             System.out.println("...Document API...\n0 - close API\n1 - list files\n2 - open document\n3 - create document");
@@ -46,6 +55,8 @@ public class DocumentAPI {
             } catch (InputMismatchException e) {
                 continue;
             }
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             switch (option) {
                 case 0:
                     keepAlive = false;
@@ -60,6 +71,7 @@ public class DocumentAPI {
                     documentAPI.createDocument();
                     break;
             }
+            String wait = scanner.next();
         }
     }
     public static void startDocumentApiInDirectory(String path) {
@@ -90,12 +102,6 @@ public class DocumentAPI {
         }
     }
 
-    private final Document document = new Document();
-    private final Scanner scanner = new Scanner(System.in);
-    private final Scanner lineScanner = new Scanner(System.in);
-    private String directoryPath = null;
-    private TreeSet<String> fileNames = new TreeSet<>();
-
     public int openDirectory() {
         try (Stream<Path> files = Files.list(Path.of(this.directoryPath))) {
             files.filter(Files::isRegularFile).forEach(file -> this.fileNames.add(file.getFileName().toString()));
@@ -105,7 +111,7 @@ public class DocumentAPI {
         }
         TreeSet<String> correctFiles = new TreeSet<>(this.fileNames);
         for (String fileName : this.fileNames) {
-            if (document.openFile(directoryPath + '/' + fileName) != 0) {
+            if (DOCUMENT.openFile(directoryPath + '/' + fileName) != 0) {
                 correctFiles.remove(fileName);
             }
         }
@@ -118,7 +124,7 @@ public class DocumentAPI {
             System.out.println("0 - go back\n1 - by name\n2 - by author\n3 - by creation date\n4 - by size");
             byte option;
             try {
-                option = scanner.nextByte();
+                option = SCANNER.nextByte();
             } catch (Exception e) {
                 continue;
             }
@@ -151,8 +157,8 @@ public class DocumentAPI {
         System.out.println("---List of files---");
         TreeMap<String, String> list = new TreeMap<>();
         for (String fileName : this.fileNames) {
-            document.openFile(this.directoryPath + '/' + fileName);
-            String author = document.getAuthor();
+            DOCUMENT.openFile(this.directoryPath + '/' + fileName);
+            String author = DOCUMENT.getAuthor();
             list.put(author, fileName);
         }
 
@@ -166,8 +172,8 @@ public class DocumentAPI {
         System.out.println("---List of files---");
         TreeMap<String, String> list = new TreeMap<>();
         for (String fileName : this.fileNames) {
-            document.openFile(this.directoryPath + '/' + fileName);
-            String date = document.getCreationDate();
+            DOCUMENT.openFile(this.directoryPath + '/' + fileName);
+            String date = DOCUMENT.getCreationDate();
             list.put(date, fileName);
         }
 
@@ -181,8 +187,8 @@ public class DocumentAPI {
         System.out.println("---List of files---");
         TreeMap<Long, String> list = new TreeMap<>();
         for (String fileName : this.fileNames) {
-            document.openFile(this.directoryPath + '/' + fileName);
-            long size = document.getFileSize();
+            DOCUMENT.openFile(this.directoryPath + '/' + fileName);
+            long size = DOCUMENT.getFileSize();
             list.put(size, fileName);
         }
 
@@ -196,7 +202,7 @@ public class DocumentAPI {
         System.out.print("Enter file name: ");
         String fileName;
         do {
-            fileName = scanner.next();
+            fileName = SCANNER.next();
         } while (fileName.isEmpty());
         return this.directoryPath + '/' + fileName;
     }
@@ -206,17 +212,17 @@ public class DocumentAPI {
         System.out.print("Enter title of the document: ");
         String title;
         do {
-            title = scanner.nextLine();
+            title = SCANNER.nextLine();
         } while (title.isEmpty());
-        document.setTitle(title);
+        DOCUMENT.setTitle(title);
         System.out.print("Enter author of the document: ");
         String author;
         do {
-            author = scanner.nextLine();
+            author = SCANNER.nextLine();
         } while (author.isEmpty());
-        document.setAuthor(author);
+        DOCUMENT.setAuthor(author);
 
-        int creationResult = document.createFile(fileName, title, author);
+        int creationResult = DOCUMENT.createFile(fileName, title, author);
         switch (creationResult) {
             case 0:
                 System.out.println("File successfully created.");
@@ -229,12 +235,12 @@ public class DocumentAPI {
                 break;
         }
         fileNames.add(fileName);
-        document.openFile(fileName);
+        DOCUMENT.openFile(fileName);
     }
 
     public void openDocument() {
         String fileName = fileNameInput();
-        int openingResult = document.openFile(fileName);
+        int openingResult = DOCUMENT.openFile(fileName);
         switch (openingResult) {
             case 0:
                 System.out.println("Document opened successfully");
@@ -251,7 +257,7 @@ public class DocumentAPI {
             System.out.printf("---%s---\n", fileName);
             System.out.println("0 - go back\n1 - print\n2 - edit\n3 - search\n");
             try {
-                option = scanner.nextByte();
+                option = SCANNER.nextByte();
             } catch (Exception e) {
                 continue;
             }
@@ -276,9 +282,9 @@ public class DocumentAPI {
         String inputString = "";
         while (inputString.isEmpty()) {
             System.out.print("Search string: ");
-            inputString = scanner.nextLine();
+            inputString = SCANNER.nextLine();
         }
-        List<String> fileContents = document.getFileContents();
+        List<String> fileContents = DOCUMENT.getFileContents();
         int index = 1;
         for (String line : fileContents) {
             if (line.contains(inputString)) {
@@ -292,9 +298,9 @@ public class DocumentAPI {
     // editing: write, appending, substituting line
     private final int linesPerPage = 15;
     private void printDocumentInfo() {
-        System.out.printf("\nTitle: %s\n", document.getTitle());
-        System.out.printf("Author: %s\n", document.getAuthor());
-        System.out.printf("Creation date: %s\n\n", document.getCreationDate());
+        System.out.printf("\nTitle: %s\n", DOCUMENT.getTitle());
+        System.out.printf("Author: %s\n", DOCUMENT.getAuthor());
+        System.out.printf("Creation date: %s\n\n", DOCUMENT.getCreationDate());
     }
 
     private void writeDocument() {
@@ -310,7 +316,7 @@ public class DocumentAPI {
 
             numberOfLines = 0;
             do {
-                input = lineScanner.nextLine();
+                input = LINE_SCANNER.nextLine();
                 if (input.equals("/end")) {
                     continueAppending = false;
                     break;
@@ -320,12 +326,12 @@ public class DocumentAPI {
             } while (numberOfLines < this.linesPerPage);
             currentPage++;
         } while (continueAppending);
-        document.setFileContents(inputLines);
+        DOCUMENT.setFileContents(inputLines);
     }
 
     private void appendDocument() {
         List<String> inputLines = new ArrayList<>();
-        List<String> contents = new ArrayList<>(document.getFileContents());
+        List<String> contents = new ArrayList<>(DOCUMENT.getFileContents());
         int numberOfPages = contents.size() / this.linesPerPage + 1;
         int lastPageLine = this.linesPerPage * (numberOfPages - 1);
         String input;
@@ -343,7 +349,7 @@ public class DocumentAPI {
             }
             numberOfLines = 0;
             do {
-                input = lineScanner.nextLine();
+                input = LINE_SCANNER.nextLine();
                 if (input.equals("/end")) {
                     continueAppending = false;
                     break;
@@ -354,7 +360,7 @@ public class DocumentAPI {
             currentPage++;
         } while (continueAppending);
         contents.addAll(inputLines);
-        document.setFileContents(contents);
+        DOCUMENT.setFileContents(contents);
     }
 
     private void handleLineSubstitute(String input, List<String> contents) {
@@ -367,7 +373,7 @@ public class DocumentAPI {
             numberStr = matcher.group();
             number = Integer.parseInt(numberStr);
             System.out.print("Enter text to substitute with: ");
-            newLine = lineScanner.nextLine();
+            newLine = LINE_SCANNER.nextLine();
             contents.set(number - 1, newLine);
         } else {
             System.out.println("No such line");
@@ -375,11 +381,11 @@ public class DocumentAPI {
     }
 
     private void substituteByLine() {
-        if (document.notDocument()) {
+        if (DOCUMENT.notDocument()) {
             System.out.println("Document file wasn't specified.");
             return;
         }
-        List<String> contents = new ArrayList<>(document.getFileContents());
+        List<String> contents = new ArrayList<>(DOCUMENT.getFileContents());
 
         int numberOfPageLines = 15;
         int numberOfPages = contents.size() / numberOfPageLines + 1;
@@ -403,7 +409,7 @@ public class DocumentAPI {
             System.out.printf("\npage %d/%d\n", currentPage, numberOfPages);
             System.out.println("e<number> - edit line by number <number>, q - quit, n - next page, p - previous page");
 
-            input = scanner.next();
+            input = SCANNER.next();
             if (input.charAt(0) == 'n' && currentPage < numberOfPages) {
                 currentPage++;
             }
@@ -415,16 +421,16 @@ public class DocumentAPI {
             }
 
         } while (input.charAt(0) != 'q');
-        document.setFileContents(contents);
+        DOCUMENT.setFileContents(contents);
     }
 
     public void editDocument() {
-        if (document.notDocument()) {
+        if (DOCUMENT.notDocument()) {
             System.out.println("Document file wasn't specified.");
             return;
         }
         System.out.println("Choose editing method:\n0 - cancel\n1 - write\n2 - append\n3 - substitute lines");
-        char enteredOption = scanner.next().charAt(0);
+        char enteredOption = SCANNER.next().charAt(0);
         switch (enteredOption) {
             case '0':
                 return;
@@ -438,7 +444,7 @@ public class DocumentAPI {
                 substituteByLine();
                 break;
         }
-        int savingResult = document.saveDocument();
+        int savingResult = DOCUMENT.saveDocument();
         if (savingResult == 1) {
             System.out.println("There is nothing to write to file");
         }
@@ -448,11 +454,11 @@ public class DocumentAPI {
     }
 
     public void printDocument() {
-        if (document.notDocument()) {
+        if (DOCUMENT.notDocument()) {
             System.out.println("Document file wasn't specified.");
             return;
         }
-        List<String> contents = document.getFileContents();
+        List<String> contents = DOCUMENT.getFileContents();
         int numberOfPageLines = 15;
         int numberOfPages = contents.size() / numberOfPageLines + 1;
         int currentPage = 1;
@@ -461,6 +467,8 @@ public class DocumentAPI {
 
         char input;
         do {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             printDocumentInfo();
 
             currentPageLine = (currentPage - 1) * numberOfPageLines;
@@ -475,7 +483,7 @@ public class DocumentAPI {
             System.out.printf("\npage %d/%d\n", currentPage, numberOfPages);
             System.out.println("q - quit, n - next page, p - previous page");
 
-            input = scanner.next().charAt(0);
+            input = SCANNER.next().charAt(0);
             if (input == 'n' && currentPage < numberOfPages) {
                 currentPage++;
             }
